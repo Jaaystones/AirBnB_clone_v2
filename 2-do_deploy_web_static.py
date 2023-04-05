@@ -5,8 +5,6 @@ import os
 from fabric.context_managers import cd
 
 env.hosts = ['52.87.216.6', '54.175.46.5']
-env.user = 'ubuntu'
-env.key_filename = '/root/.ssh/id_rsa'
 
 
 def do_deploy(archive_path):
