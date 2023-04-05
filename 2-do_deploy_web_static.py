@@ -8,7 +8,6 @@ env.hosts = ['52.87.216.6', '54.175.46.5']
 env.user = 'ubuntu'
 env.key_filename = '/root/.ssh/school'
 
-
 def do_deploy(archive_path):
     """
     Distributes an archive to your web servers
@@ -42,5 +41,6 @@ def do_deploy(archive_path):
         # Create a symbolic link from /data/web_static/current to new code
         run("sudo ln -s /data/web_static/releases/{}/ \
             /data/web_static/current".format(web_static_path))
+        except:
+                return False
         return True
-    return False
