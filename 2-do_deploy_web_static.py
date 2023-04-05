@@ -21,15 +21,15 @@ def do_deploy(archive_path):
     archive_filename = archive_path.split("/")[-1]
     archive_basename = archive_filename.split(".")[0]
     release_dir = "/data/web_static/releases/" + archive_basename
-    run("mkdir -p {}".format(release_dir))
-    run("tar -xzf /tmp/{} -C {}".format(archive_filename, release_dir))
-    run("rm /tmp/{}".format(archive_filename))
-    run("mv {}/web_static/* {}/".format(release_dir, release_dir))
-    run("rm -rf {}/web_static".format(release_dir))
+    run("sudo mkdir -p {}".format(release_dir))
+    run("sudo tar -xzf /tmp/{} -C {}".format(archive_filename, release_dir))
+    run("sudo rm /tmp/{}".format(archive_filename))
+    run("sudo mv {}/web_static/* {}/".format(release_dir, release_dir))
+    run("sudo rm -rf {}/web_static".format(release_dir))
 
     # Update the symbolic link
     current_dir = "/data/web_static/current"
-    run("rm -f {}".format(current_dir))
-    run("ln -s {} {}".format(release_dir, current_dir))
+    run("sudo rm -f {}".format(current_dir))
+    run("sudo ln -s {} {}".format(release_dir, current_dir))
 
     return True
