@@ -4,6 +4,7 @@ from time import strftime
 from datetime import datetime
 import os
 
+
 def do_pack():
     """
     Generates a .tgz archive from the contents of the web_static folder
@@ -22,6 +23,4 @@ def do_pack():
 
         # Return the path to the archive file
         return archive_path
-    except:
-        # Return None if an error occurred
-        return None
+    return None
