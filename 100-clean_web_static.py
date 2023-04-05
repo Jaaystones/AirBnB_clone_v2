@@ -1,8 +1,4 @@
 #!/usr/bin/python3
-"""
-Fabric script based on 3-deploy_web_static.py to clean up outdated archives.
-"""
-
 from fabric.api import *
 from os import path
 
@@ -10,7 +6,6 @@ env.hosts = ['52.87.216.6', '54.175.46.5']
 
 
 def do_clean(num=0):
-    def do_clean(number=0):
     """Delete out-of-date archives.
     Args:
         number (int): The number of archives to keep.
