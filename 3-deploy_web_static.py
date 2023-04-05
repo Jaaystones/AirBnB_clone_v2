@@ -13,15 +13,16 @@ def do_pack():
     Generates a .tgz archive from the contents of the
     web_static folder of the AirBnB Clone repo
     """
+    file = strftime("%Y%m%d%H%M%S")
     try:
-        if not os.path.exists("versions"):
-            local("mkdir -p versions")
-            now = datetime.now()
-            date_time = now.strftime("%Y%m%d%H%M%S")
-            file_name = "versions/web_static_{}.tgz".format(date_time)
-            local("tar -czvf {} web_static".format(file_name))
-            return None
-        return filename
+        local("mkdir -p versions")
+        local("tar -czvf versions/web_static_{}.tgz web_static/"
+              .format(file))
+
+        return "versions/web_static_{}.tgz".format(file)
+
+    except Exception as e:
+        return None
 
 
 def do_deploy(archive_path):
