@@ -23,16 +23,16 @@ def do_deploy(archive_path):
         return False
     try:
         upload = put(archive_path, "/tmp/")
-        web = archive_path[11:-4]
-        web_path = "/data/web_static/releases/" + name
-        run("mkdir {}".format(web_path))
-        run("tar -xvzf /tmp/{}.tgz --directory {}/".format(web, web_path))
-        run("rm /tmp/{}.tgz".format(web))
-        run("rm /data/web_static/current")
-        run("ln -nsf /data/web_static/releases/{} /data/web_static/current"
-            .format(web))
-        run("mv {}/web_static/* {}".format(web_path, web_path))
-        run("rm -d {}/web_static/".format(web_path))
+        static = archive_path[11:-4]
+        static_path = "/data/web_static/releases/" + static
+        run("sudo mkdir {}".format(static_path))
+        run("sudo tar -xvzf /tmp/{}.tgz --directory {}/".format(static, static_path))
+        run("sudo rm /tmp/{}.tgz".format(static))
+        run("sudo rm /data/web_static/current")
+        run("sudo ln -nsf /data/web_static/releases/{} /data/web_static/current"
+            .format(static))
+        run("sudo mv {}/web_static/* {}".format(static_path, static_path))
+        run("sudo rm -d {}/web_static/".format(static_path))
         return True
     return False
 
