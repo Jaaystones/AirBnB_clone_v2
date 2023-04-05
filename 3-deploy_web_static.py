@@ -4,9 +4,8 @@ from datetime import datetime
 import os
 from fabric.context_managers import cd
 
+
 env.hosts = ['52.87.216.6', '54.175.46.5']
-env.user = 'ubuntu'
-env.password = '/root/.ssh/school'
 
 
 def do_pack():
