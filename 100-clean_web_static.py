@@ -6,7 +6,7 @@ import os
 
 def do_pack():
     now = datetime.datetime.now()
-    date = (str(now.year) + str(now.month) + str(now.day)\
+    date = (str(now.year) + str(now.month) + str(now.day)
             + str(now.hour) + str(now.minute) + str(now.second))
     try:
         local("mkdir -p versions")
