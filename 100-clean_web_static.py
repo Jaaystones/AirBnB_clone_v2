@@ -19,7 +19,7 @@ def do_clean(number=0):
     number is 2, keeps the most and second-most recent archives,
     etc.
     """
-     num_files = local("ls -1t versions/ | wc -l", capture=True)
+    num_files = local("ls -1t versions/ | wc -l", capture=True)
     if number == "0":
         number = "1"
     sub = int(num_files) - int(number)
