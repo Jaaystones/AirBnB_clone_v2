@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from fabric.api import run, local, env, put
 from datetime import datetime
-import os
+from os import path
 from fabric.context_managers import cd
 
 env.hosts = ['52.87.216.6', '54.175.46.5']
