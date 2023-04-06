@@ -13,21 +13,16 @@ def do_clean(number=0):
     """Delete out-of-date archives.
 
     Args:
-        value(int): The number of archives to keep.
+        number(int): The number of archives to keep.
 
     If number is 0 or 1, keeps only the most recent archive. If
     number is 2, keeps the most and second-most recent archives,
     etc.
     """
-    value = 1 if int(value) == 0 else int(value)
-
-    archives = sorted(os.listdir("versions"))
-    [archives.pop() for i in range(value)]
-    with lcd("versions"):
-        [local("rm ./{}".format(a)) for a in archives]
-
-    with cd("/data/web_static/releases"):
-        archives = run("ls -tr").split()
-        archives = [a for a in archives if "web_static_" in a]
-        [archives.pop() for i in range(value)]
-        [run("rm -rf ./{}".format(a)) for a in archives]
+     num_files = local("ls -1t versions/ | wc -l", capture=True)
+    if number == "0":
+        number = "1"
+    sub = int(num_files) - int(number)
+    if sub > 0:
+        for i in range(0, sub):
+            local("rm  versions/$(ls -1t versions/ | tail -1)")
