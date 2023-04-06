@@ -1,78 +1,75 @@
 #!/usr/bin/python3
-from fabric.api import run, local, env, put
+import os.path
 from datetime import datetime
-import os
-from fabric.context_managers import cd
-
+from fabric.api import env
+from fabric.api import local
+from fabric.api import put
+from fabric.api import run
 
 env.hosts = ['52.87.216.6', '54.175.46.5']
 
 
 def do_pack():
-    """
-    Generates a .tgz archive from the contents of the
-    web_static folder of the AirBnB Clone repo
-    """
-    file = strftime("%Y%m%d%H%M%S")
-    try:
-        local("mkdir -p versions")
-        local("tar -czvf versions/web_static_{}.tgz web_static/"
-              .format(file))
-
-        return "versions/web_static_{}.tgz".format(file)
-
-    except Exception as e:
+    """Create a tar gzipped archive of the directory web_static."""
+    dt = datetime.utcnow()
+    file = "versions/web_static_{}{}{}{}{}{}.tgz".format(dt.year,
+                                                         dt.month,
+                                                         dt.day,
+                                                         dt.hour,
+                                                         dt.minute,
+                                                         dt.second)
+    if os.path.isdir("versions") is False:
+        if local("mkdir -p versions").failed is True:
+            return None
+    if local("tar -cvzf {} web_static".format(file)).failed is True:
         return None
+    return file
 
 
 def do_deploy(archive_path):
-    """
-    Distributes an archive to your web servers
+    """Distributes an archive to a web server.
+
     Args:
         archive_path (str): The path of the archive to distribute.
     Returns:
-        If the file doesn't exist at archive_path or returns an error - False.
+        If the file doesn't exist at archive_path or an error occurs - False.
         Otherwise - True.
     """
-    if not os.path.exists(archive_path):
+    if os.path.isfile(archive_path) is False:
         return False
+    file = archive_path.split("/")[-1]
+    path = file.split(".")[0]
 
-    try:
-        # Upload the archive to the server
-        put(archive_path, "/tmp/")
-
-        # Create the directory where the files will be extracted
-        static = archive_path.split("/")[-1]
-        static_path = static.split(".")[0]
-        run("sudo mkdir -p /data/web_static\
-                /releases/{}/".format(static_path))
-        # Extract the archive into the directory
-        run("sudo tar -xzf /tmp/{} -C\
-                /data/web_static/releases/{}/".format(static, static_path))
-        # Delete the archive from the server
-        run("sudo rm /tmp/{}".format(static))
-        # Move the contents of the web_static directory up one level
-        run("sudo mv /data/web_static/releases/{}/web_static/* \
-                /data/web_static/releases/{}/".format(static, static_path))
-        # Remove the now empty web_static directory
-        run("sudo rm -rf /data/web_static/releases/{}\
-                /web_static".format(static_path))
-        # Delete the symbolic link /data/web_static/current from the web server
-        run("rm -rf /data/web_static/current")
-        # Create a symbolic link from /data/web_static/current to the path
-        run("ln -s /data/web_static/releases/{}/\
-                /data/web_static/current".format(static_path))
-        return True
-    return False
+    if put(archive_path, "/tmp/{}".format(file)).failed is True:
+        return False
+    if run("rm -rf /data/web_static/releases/{}/".
+           format(name)).failed is True:
+        return False
+    if run("mkdir -p /data/web_static/releases/{}/".
+           format(name)).failed is True:
+        return False
+    if run("tar -xzf /tmp/{} -C /data/web_static/releases/{}/".
+           format(file, name)).failed is True:
+        return False
+    if run("rm /tmp/{}".format(file)).failed is True:
+        return False
+    if run("mv /data/web_static/releases/{}/web_static/* "
+           "/data/web_static/releases/{}/".format(name, name)).failed is True:
+        return False
+    if run("rm -rf /data/web_static/releases/{}/web_static".
+           format(name)).failed is True:
+        return False
+    if run("rm -rf /data/web_static/current").failed is True:
+        return False
+    if run("ln -s /data/web_static/releases/{}/ /data/web_static/current".
+           format(name)).failed is True:
+        return False
+    return True
 
 
 def deploy():
-    """
-    Full deployment of AirBnB Clone
-    """
-    # Create the archive of the web_static folder
-    archive_path = do_pack()
-    if archive_path is None:
+    """Create and distribute an archive to a web server."""
+    file = do_pack()
+    if file is None:
         return False
-    # Distribute the archive to the web servers
-    return do_deploy(archive_path)
+    return do_deploy(file)
