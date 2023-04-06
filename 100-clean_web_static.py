@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 import os
-from fabric.api import *
+from fabric.api import env
+from fabric.api import local
+from fabric.api import put
+from fabric.api import run
 
 env.hosts = ['52.87.216.6', '54.175.46.5']
 env.key_filename = '/root/.ssh/school'
