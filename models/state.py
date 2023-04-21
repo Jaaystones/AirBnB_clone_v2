@@ -1,6 +1,7 @@
 #!/bin/bash/python3
 """ State Module for HBNB project """
 from models.base_model import BaseModel, Base
+from models import storage
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from os import getenv
@@ -16,7 +17,6 @@ class State(BaseModel, Base):
 
         @property
         def cities(self):
-            from models import storage
             city_list = []
             for city in storage.all("City").values():
                 if city.state_id == self.id:
