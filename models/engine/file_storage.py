@@ -7,6 +7,7 @@ class FileStorage:
     """This class manages storage of hbnb models in JSON format"""
     __file_path = 'file.json'
     __objects = {}
+    __session = None
 
     def all(self, cls=None):
         """Returns a dictionary of models currently in storage"""
@@ -71,3 +72,5 @@ class FileStorage:
     def close(self):
         """Call the reload method"""
         self.reload()
+        if self.__session is not None:
+            self.__session.close()

@@ -91,11 +91,8 @@ class DBStorage:
         session_factory = sessionmaker(bind=self.__engine,
                                        expire_on_commit=False)
         self.__session = scoped_session(session_factory)()
+        self.__session = Session()
 
     def close(self):
-        """Calls reload() method for deserializing the JSON file to objects
-        and calls the close() method on the private session attribute
-        (self.__session) or Session class"""
-        self.reload()
-        if self.__session is not None:
-            self.__session.close()
+        """Close method"""
+        self.__session.close()
