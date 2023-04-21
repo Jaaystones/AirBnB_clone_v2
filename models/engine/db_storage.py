@@ -93,5 +93,9 @@ class DBStorage:
         self.__session = scoped_session(session_factory)()
 
     def close(self):
-        """closes the working SQLAlchemy session"""
-        self.__session.close()
+        """Calls reload() method for deserializing the JSON file to objects
+        and calls the close() method on the private session attribute
+        (self.__session) or Session class"""
+        self.reload()
+        if self.__session is not None:
+            self.__session.close()
