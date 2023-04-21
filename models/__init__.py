@@ -1,13 +1,15 @@
 #!/usr/bin/python3
-"'"This module instantiates an instance of the Storage will be used!!"
-Blame
+"""This module instantiates an instance of the Storage will be used"""
 
 from os import getenv
 
-storage_type = getenv ('HBNB_TYPE_STORAGE')
+storage_type = getenv('HBNB_TYPE_STORAGE')
 
-def __init__(self, *args, **kwargs) :
-"""Initializes State instance'"" 
-    super (). init_ (*args, **kwargs)
+if storage_type == 'db':
+    from models.engine.db_storage import DBStorage
+    storage = DBStorage()
+else:
+    from models.engine.file_storage import FileStorage
+    storage = FileStorage()
 
 storage.reload()
