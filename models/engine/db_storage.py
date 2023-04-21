@@ -1,73 +1,83 @@
 #!/usr/bin/python3
-"""This module defines a class to manage file storage for hbnb clone"""
-import json
+"""Db engine to store in the database
+"""
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
+from os import getenv
+import sqlalchemy
+from models.base_model import Base
+from models.user import User
+from models.place import Place
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.review import Review
 
 
-class FileStorage:
-    """This class manages storage of hbnb models in JSON format"""
-    __file_path = 'file.json'
-    __objects = {}
+class DBStorage:
+    """this class is the engine to store
+    mysql database
+    """
+    __engine = None
+    __session = None
+
+    def __init__(self):
+        """initialization
+        """
+        USER = getenv('HBNB_MYSQL_USER')
+        PASSWORD = getenv('HBNB_MYSQL_PWD')
+        HOST = getenv('HBNB_MYSQL_HOST')
+        DB = getenv('HBNB_MYSQL_DB')
+        ENV = getenv('HBNB_ENV')
+        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.format(
+            USER,
+            PASSWORD,
+            HOST,
+            DB), pool_pre_ping=True)
+        if ENV == "test":
+            Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """Returns a dictionary of models currently in storage"""
-        if cls is None:
-            return self.__objects
-        cls_name = cls.__name__
-        dct = {}
-        for key in self.__objects.keys():
-            if key.split('.')[0] == cls_name:
-                dct[key] = self.__objects[key]
-        return dct
+        """show the requested data from database"""
+        show = {}
+        classes = {
+            'State': State, 'City': City,
+            'Amenity': Amenity, 'User': User,
+            'Place': Place, 'Review': Review}
+
+        if cls is not None:
+            objects = self.__session.query(cls).all()
+            for obj in objects:
+                show[obj.to_dict()['__class__'] + '.' + obj.id] = obj
+        else:
+            for clase, value in classes.items():
+                objects = self.__session.query(value).all()
+                for obj in objects:
+                    show[obj.to_dict()['__class__'] + '.' + obj.id] = obj
+        return show
 
     def new(self, obj):
-        """Adds new object to storage dictionary"""
-        self.__objects.update(
-            {obj.to_dict()['__class__'] + '.' + obj.id: obj}
-            )
+        """add data to db"""
+        self.__session.add(obj)
 
     def save(self):
-        """Saves storage dictionary to file"""
-        with open(self.__file_path, 'w') as f:
-            temp = {}
-            temp.update(self.__objects)
-            for key, val in temp.items():
-                temp[key] = val.to_dict()
-            json.dump(temp, f)
-
-    def reload(self):
-        """Loads storage dictionary from file"""
-        from models.base_model import BaseModel
-        from models.user import User
-        from models.place import Place
-        from models.state import State
-        from models.city import City
-        from models.amenity import Amenity
-        from models.review import Review
-
-        classes = {
-                    'BaseModel': BaseModel, 'User': User, 'Place': Place,
-                    'State': State, 'City': City, 'Amenity': Amenity,
-                    'Review': Review
-                  }
-        try:
-            temp = {}
-            with open(self.__file_path, 'r') as f:
-                temp = json.load(f)
-                for key, val in temp.items():
-                    self.all()[key] = classes[val['__class__']](**val)
-        except FileNotFoundError:
-            pass
+        """store the added data"""
+        self.__session.commit()
 
     def delete(self, obj=None):
-        ''' deletes the object obj from the attribute
-            __objects if it's inside it
-        '''
-        if obj is None:
-            return
-        obj_key = obj.to_dict()['__class__'] + '.' + obj.id
-        if obj_key in self.__objects.keys():
-            del self.__objects[obj_key]
+        """remove data"""
+        self.__session.detele(obj)
+
+    def reload(self):
+        """create all reload data
+        """
+        Base.metadata.create_all(self.__engine)
+        session_factory = sessionmaker(bind=self.__engine,
+                                       expire_on_commit=False)
+        self.__session = scoped_session(
+            session_factory)
 
     def close(self):
-        """Call the reload method"""
-        self.reload()
+        """call remove() method on the private session attribute
+        (self.__session) tips or close() on the class Session"""
+        self.__session.remove()
