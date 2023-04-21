@@ -1,24 +1,32 @@
 #!/usr/bin/python3
-"""List all states Module"""
-
+"""Write a script that starts a Flask web application
+and would be listening on 0.0.0.0, port 5000"""
+from flask import Flask, request, render_template
 from models import storage
 from models.state import State
-from flask import Flask, render_template
 
 app = Flask(__name__)
-app.url_map.strict_slashes = False
 
 
-@app.route('/states_list')
+@app.route("/states_list", strict_slashes=False)
 def states_list():
-    """display a HTML the States"""
-    all_states = list(storage.all(State).values())
-    return (render_template('7-states_list.html', all_states=all_states))
+    """/states_list folder
+    storage.all() -> dictionary with objects of everything
+
+    storage.all(State) -> dictionary with all instances of State
+
+    storage.all(State).values() -> infomation of every State
+
+    Returns:
+        [HTML content: [display a HTML page: (inside the tag BODY)]
+    """
+    states = list(storage.all(State).values())
+    return render_template("7-states_list.html", states=states)
 
 
 @app.teardown_appcontext
-def teardown(self):
-    """function that call close method"""
+def remove_session(exception):
+    """after each request you must remove the current SQLAlchemy Session"""
     storage.close()
 
 
