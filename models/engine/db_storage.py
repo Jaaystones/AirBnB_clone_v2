@@ -40,7 +40,7 @@ class DBStorage:
                                        ), pool_pre_ping=True)
 
         if HBNB_ENV == 'test':
-            Base.metadata.drop_all(self.__engine)
+            Base.metadata.drop_all(bind=self.__engine)
 
     def all(self, cls=None):
         '''query on the current db session all cls objects
