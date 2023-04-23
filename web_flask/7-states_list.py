@@ -8,6 +8,12 @@ from models.state import State
 app = Flask(__name__)
 
 
+@app.teardown_appcontext
+def remove_session(exception):
+    """after each request you must remove the current SQLAlchemy Session"""
+    storage.close()
+
+
 @app.route("/states_list", strict_slashes=False)
 def states_list():
     """/states_list folder
@@ -22,12 +28,6 @@ def states_list():
     """
     states = list(storage.all(State).values())
     return render_template("7-states_list.html", states=states)
-
-
-@app.teardown_appcontext
-def remove_session(exception):
-    """after each request you must remove the current SQLAlchemy Session"""
-    storage.close()
 
 
 if __name__ == '__main__':

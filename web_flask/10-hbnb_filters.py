@@ -2,7 +2,7 @@
 """ a script that starts a Flask web application """
 from flask import Flask
 from flask import render_template
-from models import storage, State
+from models import storage, State, Amenity
 
 app = Flask(__name__)
 
@@ -13,12 +13,14 @@ def remove_session(exception):
     storage.close()
 
 
-@app.route('/cities_by_states', strict_slashes=False)
-def display_cities_by_states():
-    """ displays all states and their cities """
+@app.route('/hbnb_filters', strict_slashes=False)
+def render_states_amenities():
+    """ displays states and cities """
     States = storage.all(State).values()
-    return render_template("8-cities_by_states.html", States=States)
+    Amenities = storage.all(Amenity).values()
+    return render_template("10-hbnb_filters.html",
+                           States=States, Amenities=Amenities)
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000):
+    app.run(host='0.0.0.0', port=5000)
