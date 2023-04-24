@@ -35,11 +35,10 @@ def python(text):
     return 'Python {}'.format(text.replace('_', ' '))
 
 
-@app.route('/number/<int:n>', strict_slashes=False)
+@app.route("/number/<int:n>")
 def number(n):
-    """Displays 'n is a number' on the /number/<n> route
-    only if n is an integer."""
-    return '{} is a number'.format(n)
+    """function2"""
+    return ("{} is a number".format(n))
 
 
 @app.route('/number_template/<int:n>', strict_slashes=False)
